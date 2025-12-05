@@ -1,11 +1,35 @@
-<div align="center">
+# Inha LMS - Hybrid Desktop App
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+This project consists of a React frontend and a Python (PyQt6) desktop wrapper.
 
-  <h1>Built with AI Studio</h2>
+## Prerequisites
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+1. **Node.js**: To run the frontend.
+2. **Python 3.10+**: To run the desktop container.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## How to Run
 
-</div>
+You need two terminal windows open.
+
+### Step 1: Start the React Frontend
+In the first terminal, start the development server. This serves the UI.
+
+```bash
+npm start
+```
+*Note: Wait until it says "Compiled successfully" and tells you the port (usually localhost:8080).*
+
+### Step 2: Start the Python Desktop Client
+In the second terminal, install the python requirements and launch the app.
+
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
+## Features
+- The `main.py` script creates a native window using `QWebEngineView`.
+- It loads the URL `http://localhost:8080`.
+- Inside the app, you can switch roles (Student, Professor, Admin) using the floating button in the bottom right corner.
+- **SysAdmin View**: Shows a terminal-like SQL interface.
+- **Inbox**: Includes Gemini AI integration for drafting emails.

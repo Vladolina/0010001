@@ -1,7 +1,9 @@
+
 import React, { useState, useRef } from 'react';
 import { User, UserRole } from '../types';
 import { Upload } from 'lucide-react';
 import { FingerprintScanner } from './FingerprintScanner';
+import { studentsData } from '../students';
 
 interface AttendanceProps {
   user: User;
@@ -12,69 +14,12 @@ interface AttendanceProps {
 // -----------------------------------------------------------------------------
 const WEEKS = Array.from({ length: 15 }, (_, i) => i + 1);
 
-// Professor View Data - 60 Students from U2310 cohort
-const PROF_VIEW_STUDENTS = [
-  { id: 'U2310002', name: 'ABBOSOV MUXAMMADYOSIN', absences: 0 },
-  { id: 'U2310003', name: 'ABDUGANIYEV ABDUVORIS', absences: 1 },
-  { id: 'U2310004', name: 'ABDUKARIMOV XASAN', absences: 2 },
-  { id: 'U2310005', name: 'ABDUKARIMOV XUSAN', absences: 0 },
-  { id: 'U2310006', name: 'ABDULAZIZOVA NILUFARBONU', absences: 1 },
-  { id: 'U2310007', name: 'ABDULLAYEV SAYID SARDARXAN', absences: 0 },
-  { id: 'U2310008', name: 'ABDULLOYEV SOLEH', absences: 3 },
-  { id: 'U2310009', name: 'ABDUMANNONOV ADHAMBEK', absences: 0 },
-  { id: 'U2310010', name: 'ABDUMANNONOV ASLIDDIN', absences: 0 },
-  { id: 'U2310011', name: 'ABDUQAHHOROV OYBEK', absences: 1 },
-  { id: 'U2310012', name: 'ABDURAHIMOV JAHONGIR', absences: 0 },
-  { id: 'U2310013', name: 'ABDURASULOV ABDUVORIS', absences: 0 },
-  { id: 'U2310014', name: 'ABDURAYIMOV JAVOXIR', absences: 2 },
-  { id: 'U2310015', name: 'ABDUSHUKUROV AKMAL', absences: 0 },
-  { id: 'U2310016', name: 'ABDUVOKHIDOV KHASANBOY', absences: 0 },
-  { id: 'U2310017', name: 'ABDUVOXIDOV SHUKURXO\'JA', absences: 1 },
-  { id: 'U2310018', name: 'ABDUXOSHIMOV SANJAR', absences: 0 },
-  { id: 'U2310019', name: 'ABIROVA SARVINISO', absences: 0 },
-  { id: 'U2310020', name: 'ADILOV RUSTAM', absences: 4 },
-  { id: 'U2310021', name: 'AITBAYEV ULUG\'BEK', absences: 0 },
-  { id: 'U2310022', name: 'AKBAROV RAXMATULLOH', absences: 0 },
-  { id: 'U2310023', name: 'AKBAROV TEMUR', absences: 0 },
-  { id: 'U2310024', name: 'AKRAMOV TEMUR', absences: 1 },
-  { id: 'U2310025', name: 'AKROMOV ASROR', absences: 0 },
-  { id: 'U2310026', name: 'AKROMOV SAYIDAKROM', absences: 0 },
-  { id: 'U2310027', name: 'ALIQORIYEV ABDULLOH', absences: 0 },
-  { id: 'U2310028', name: 'ALISHEROV SAIDAKBAR', absences: 2 },
-  { id: 'U2310029', name: 'ALMYASHEV DAMIR', absences: 0 },
-  { id: 'U2310030', name: 'AMETOV ABDIRASHIT', absences: 0 },
-  { id: 'U2310031', name: 'AMINBOYEV SIROJIDDIN', absences: 0 },
-  { id: 'U2310032', name: 'AMIRKULOV AMIR', absences: 0 },
-  { id: 'U2310033', name: 'AN ARTUR', absences: 1 },
-  { id: 'U2310034', name: 'ARZUMANYANS VYACHESLAV', absences: 0 },
-  { id: 'U2310035', name: 'ASHIROV AMIN', absences: 0 },
-  { id: 'U2310037', name: 'ASHUROV AZAMAT', absences: 3 },
-  { id: 'U2310038', name: 'ASHUROV IZZATBEK', absences: 0 },
-  { id: 'U2310039', name: 'ASLIDINOVA SABOXAT-BEGIM', absences: 0 },
-  { id: 'U2310040', name: 'ASQAROV JO\'RABEK', absences: 0 },
-  { id: 'U2310041', name: 'ATAYEV DMITRIY', absences: 0 },
-  { id: 'U2310042', name: 'ATXAMOV RASHSHODBEK', absences: 2 },
-  { id: 'U2310043', name: 'AUKHADEEV MATVEI', absences: 0 },
-  { id: 'U2310044', name: 'AXMADOV SUNNAT', absences: 0 },
-  { id: 'U2310045', name: 'AXMEDOV A\'ZAMJON', absences: 1 },
-  { id: 'U2310046', name: 'AXMEDOV JASURBEK', absences: 0 },
-  { id: 'U2310047', name: 'AXMEDOVA MALIKA', absences: 0 },
-  { id: 'U2310048', name: 'AXMEDOVA SEVINCH', absences: 0 },
-  { id: 'U2310049', name: 'AZIMOV IBROXIM', absences: 0 },
-  { id: 'U2310050', name: 'AZIZOV TEMUR', absences: 0 },
-  { id: 'U2310051', name: 'BAHRONOV SOJID', absences: 0 },
-  { id: 'U2310052', name: 'BAXODIROV AKMAL', absences: 5 },
-  { id: 'U2310053', name: 'BAXROMOV A\'ZAM', absences: 0 },
-  { id: 'U2310054', name: 'BAXTIYOROVA DIYORA', absences: 0 },
-  { id: 'U2310055', name: 'BAYBURIN EMIL', absences: 0 },
-  { id: 'U2310056', name: 'BEGMATOVA GULBARA', absences: 0 },
-  { id: 'U2310057', name: 'BESHIMOV ULUG\'BEK', absences: 0 },
-  { id: 'U2310058', name: 'BIYNAZOVA MALIKA', absences: 1 },
-  { id: 'U2310059', name: 'BOLTABAYEV AMIR', absences: 0 },
-  { id: 'U2310060', name: 'BOTIROV BAXODIR', absences: 0 },
-  { id: 'U2310061', name: 'BOZOROV ARSLONBEK', absences: 0 },
-  { id: 'U2310062', name: 'BOZOROV ASADBEK', absences: 0 },
-];
+// Professor View Data - Loaded from TS file
+const PROF_VIEW_STUDENTS = studentsData.map(s => ({
+    id: s.id,
+    name: s.name,
+    absences: s.absences
+}));
 
 // Student View Data (Courses)
 const STUDENT_VIEW_COURSES = [
@@ -359,3 +304,4 @@ export const Attendance: React.FC<AttendanceProps> = ({ user }) => {
     }
     return <ProfessorAttendanceView />;
 };
+    
